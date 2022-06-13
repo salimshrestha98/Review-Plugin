@@ -54,7 +54,6 @@ add_action( 'wp_ajax_nopriv_rp_form_response', 'rp_form_handler' );
 
 function rp_form_handler() {
     parse_str($_POST['data'], $formData);
-    error_log( json_encode($formData));
     $err_messages = [];
     $response_obj = [];
 
@@ -70,10 +69,13 @@ function rp_form_handler() {
 
         if ( ! username_exists( $user_username ) && ! email_exists( $user_email ) ) {
             //  Create new user
-            wp_create_user( $user_username, $user_password, $user_email );
+            $uid = wp_create_user( $user_username, $user_password, $user_email );
+
+            add_user_meta( $uid, 'first_name', $user_fname);
+            add_user_meta( $uid, 'last_name', $user_lname);
 
             //  Leave an action hook for after registration actions
-            do_action( 'rp_after_user_registration' );
+            do_action( 'rp_after_user_registration', $uid );
 
             $response_obj['status'] = 'success';
             $response_obj['messages'][] = 'New User Created Successfully.';
@@ -93,6 +95,28 @@ function rp_form_handler() {
 
 }
 
+add_action( 'rp_after_user_registration', 'rp_send_registration_mail', 10, 1 );
+
+function rp_send_registration_mail( $uid ) {
+    $user = get_userdata( $uid );
+    $email = $user->user_email;
+    $username = $user->user_nicename;
+    
+    //  Send registration email
+    $mail_recipient = "salim.shrestha@themegrill.com";
+    $mail_subject = "Thank You for the review";
+    $mail_body = "
+        Dear $username,
+            We have received your review successfully. Furthermore, your subscriber account has also been set up. The account details are as follows:
+            Email: $email,
+            Username: $username
+            
+        Thank You!";
+
+        wp_mail( [ $mail_recipient ], $mail_subject, $mail_body );
+        error_log($mail_body);
+}
+
 add_filter( 'rp_after_form_receive', 'rp_extract_username', 10, 1 );
 
 //  Extract Username from Email
@@ -100,7 +124,6 @@ function rp_extract_username( $email ) {
     $email_parts = explode( '@', $email );
     $username = $email_parts[0];
 
-    error_log( $username );
     return $username;
 }
 
