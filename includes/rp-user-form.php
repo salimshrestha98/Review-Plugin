@@ -1,8 +1,8 @@
 <div class="wrap mt-5 p-5" style="background: #cccccc">
+<div id="alerts-box"></div>
 
-<form action="<?= esc_url( admin_url( 'admin-post.php' ) ); ?>" id="rp-review-form">
+<form action="<?= esc_url( admin_url( 'admin-post.php' ) ); ?>" id="rp-review-form" method="POST">
 
-<input type="hidden" name="action" value="rp_form_response">
 <input type="hidden" name="rp-nonce" value="<?= wp_create_nonce( 'rp-nonce' ); ?>" >
 <div class="form-row">
   <div class="form-group col-md-6">
