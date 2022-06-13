@@ -62,6 +62,7 @@ function rp_form_handler() {
         $user_lname = sanitize_text_field( $formData['rp-lname'] );
         $user_email = sanitize_email( $formData['rp-email'] );
         $user_password = sanitize_text_field( $formData['rp-pass'] );
+        $user_review_title = sanitize_text_field( $formData['rp-review-title'] );
         $user_review_text = sanitize_textarea_field( $formData['rp-review-text'] );
         $user_rating = sanitize_text_field( $formData['rp-rating'] );
 
@@ -73,12 +74,15 @@ function rp_form_handler() {
 
             add_user_meta( $uid, 'first_name', $user_fname);
             add_user_meta( $uid, 'last_name', $user_lname);
+            add_user_meta( $uid, 'review_content', $user_review_text );
+            add_user_meta( $uid, 'review_rating', $user_rating);
 
             //  Leave an action hook for after registration actions
             do_action( 'rp_after_user_registration', $uid );
 
             $response_obj['status'] = 'success';
             $response_obj['messages'][] = 'New User Created Successfully.';
+            $response_obj['messages'][] = 'User Review Saved Successfully.';
         } else {
             $err_messages[] = "Username or Email already exists.";
         }
@@ -126,37 +130,3 @@ function rp_extract_username( $email ) {
 
     return $username;
 }
-
-//  Register Review Post Type
-
-function rp_register_review_post_type() {
-        $labels = array(
-            'name'          => 'Reviews',
-            'singular_name' => 'Review',
-            'add_new'       => 'Add New',
-            'add_new_item'  => 'Add New Review',
-            'edit_item'     => 'Edit Review',
-            'new_item'      => 'New Review',
-            'view_item'     => 'View Review',
-            'view_items'    => 'View Reviews',
-            'search_items'  => 'Search Reviews',
-            'not_found'     => 'No Reviews found.',
-            'archives'      => 'Review Archives',
-            'atrributes'    => 'Review Attributes',
-            'featured_image'=> 'Review Image',
-            'items_list'    => 'Reviews List',
-            'item_updated'  => 'Review updated'
-        );
-        $args = array(
-            'labels'        => $labels,
-            'public'        => true,
-            'has_archive'   => true,
-            'supports'      => array('title', 'editor', 'thumbnail'),
-            'menu_icon'     => 'dashicons-feedback',
-            'rewrite'       => array( 'slug' => 'reviews' ),
-            'supports'      => array( 'title', 'editor' )
-    );
-
-    register_post_type( 'review', $args );
-}
-add_action( 'init', 'rp_register_review_post_type' );

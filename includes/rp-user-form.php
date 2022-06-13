@@ -28,6 +28,11 @@
 </div>
 
 <div class="form-group">
+  <label for="inputReviewTitle">Review Title</label>
+  <input type="text" name="rp-review-title" id="inputReviewTitle">
+</div>
+
+<div class="form-group">
     <label for="inputReviewText">Product Review</label>
     <textarea name="rp-review-text" id="inputReviewText" cols="30" rows="10" placeholder="Enter your review here .."></textarea>
 </div>
