@@ -130,3 +130,9 @@ function rp_extract_username( $email ) {
 
     return $username;
 }
+
+add_shortcode( 'rp-testimonials', 'rp_testimonials_view' );
+
+function rp_testimonials_view() {
+    include_once "includes/rp-testimonials-html.php";
+};

@@ -5,12 +5,13 @@ $(document). ready( function() {
         e.preventDefault();
         e.stopPropagation();
 
+        $('#alerts-box').html("");
+
         var formData = $('#rp-review-form').serialize();
         console.log( formData );
         $.post( ajaxVars.ajaxPostUrl, {'action': 'rp_form_response', 'data': formData}, function(response, status) {
             console.log( response );
             msg = response.messages;
-            $('#alerts-box').html("");
             if ( msg ) {
                 for (var i=0; i<msg.length; i++) {
                     $('#alerts-box').html($('#alerts-box').html() + "<p class='alert alert-success'>" + msg[i] + "</p>");
@@ -28,5 +29,13 @@ $(document). ready( function() {
         });
     });
 
-    console.log( ajaxVars );
+    $(".user-ratings").each(function( index ) {
+        var ratings = $(this).attr('data-ratings');
+        for(var i=0; i<ratings; i++) {
+            $(this).html( $(this).html() + '<span class="dashicons dashicons-star-filled text-warning"></span>')
+        }
+        for (var i=ratings; i<5; i++) {
+            $(this).html( $(this).html() + '<span class="dashicons dashicons-star-empty text-warning"></span>')
+        }
+    });
 });
