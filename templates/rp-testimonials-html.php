@@ -13,19 +13,19 @@
 
         <div class="col-md-4">
             <select class="form-control" id="rp-sort-select">
-                <option value="" disabled selected>-- Sort By --</option>
-                <option value="DESC" class="rp-sort-option" onhover="setOption">Newest First</option>
-                <option value="ASC" class="rp-sort-option" onhover="setOption">Oldest First</option>
+                <option value="" disabled selected><?php echo esc_html( '-- Sort By --', RP_TEXT_DOMAIN ); ?></option>
+                <option value="DESC" class="rp-sort-option" onhover="setOption"><?php echo esc_html( 'Newest First', RP_TEXT_DOMAIN ); ?></option>
+                <option value="ASC" class="rp-sort-option" onhover="setOption"><?php echo esc_html( 'Oldest First', RP_TEXT_DOMAIN ); ?></option>
             </select>
         </div>
     </div>
 </nav>
 <div id="cards-container" class="row">
-    Loading...
+    <?php echo esc_html( 'Loading...', RP_TEXT_DOMAIN ); ?>
 </div>
 
 <div id="rp-page-btn-html"  class="d-none">
-    <button type="button" class="btn btn-secondary rp-page-btn">Demo</button>
+    <button type="button" class="btn btn-secondary rp-page-btn"></button>
 </div>
 
 <div class="d-none" id="rp-card-template">
