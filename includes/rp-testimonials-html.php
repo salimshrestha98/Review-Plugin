@@ -1,47 +1,51 @@
 <div class="wrap">
+<nav class="bg-light px-5 py-2 border">
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            Filter: 
+            <span class="dashicons dashicons-star-empty text-warning rp-filter-star" id="rp-star-1" data-index=1></span>
+            <span class="dashicons dashicons-star-empty text-warning rp-filter-star" id="rp-star-2" data-index=2></span>
+            <span class="dashicons dashicons-star-empty text-warning rp-filter-star" id="rp-star-3" data-index=3></span>
+            <span class="dashicons dashicons-star-empty text-warning rp-filter-star" id="rp-star-4" data-index=4></span>
+            <span class="dashicons dashicons-star-empty text-warning rp-filter-star" id="rp-star-5" data-index=5></span>
+        </div>
 
+        <div class="col-md-4">
+            <select class="form-control" id="rp-sort-select">
+                <option value="" disabled selected>-- Sort By --</option>
+                <option value="DESC" class="rp-sort-option" onhover="setOption">Newest First</option>
+                <option value="ASC" class="rp-sort-option" onhover="setOption">Oldest First</option>
+            </select>
+        </div>
+    </div>
+</nav>
+<div id="cards-container" class="row">
+    Loading...
 </div>
-<?php
-  
-$args = array(
-        'meta_query' => array(
-            array(
-                'key' => 'review_rating',
-                'value' => 5,
-                'compare' => '<='
-            )
-        ),
-        'orderby' => 'user_registered',
-        'order' => 'DESC'
-    );
 
-$user_query = new WP_User_Query( $args );
+<div id="rp-page-btn-html"  class="d-none">
+    <button type="button" class="btn btn-secondary rp-page-btn">Demo</button>
+</div>
 
-$users = $user_query->get_results();
-?>
-<div class="row">
-<?php
-
-$users = array_slice( $users, 0, 6 );
-
-foreach( $users as $user ):
-    $user_meta = get_user_meta( $user->ID );
-
-    ?>
-
-    <div class="col-md-6 my-3">
+<div class="d-none" id="rp-card-template">
+    <div class="col-md-6 my-3 rp-card-item">
         <div class="card" style="height: 320px">
             <div class="card-header bg-dark text-white">
-                <span class="user-full-name"><?= $user_meta['first_name'][1] . " " . $user_meta['last_name'][1] ?></span>
-                <div class="user-ratings float-right" data-ratings="<?= $user_meta['review_rating'][0] ?>"></div>
+                <span class="rp-user-full-name"></span>
+                <div class="rp-user-ratings float-right" data-ratings=""></div>
             </div>
             <div class="card-body">
-                <strong><em>"<?= $user->review_content ?>"</em></strong>
+                <strong><em><span class="rp-user-review-text"></span></em></strong>
             </div>
         </div>
     </div>
+</div>
 
-<?php
-    endforeach;
-?>
+<div class="text-center">
+    <div class="btn-group" role="group" aria-label="Basic example" id="rp-page-btn-container">
+
+    </div>
+</div>
+
 </div>

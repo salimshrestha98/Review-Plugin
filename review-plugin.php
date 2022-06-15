@@ -27,7 +27,8 @@ add_action( 'init', 'rp_localize');
 //  Add Stylesheets
 function rp_add_stylesheets() {
     $plugin_url = plugin_dir_url( __FILE__ );
-    wp_enqueue_style( 'rp-style', $plugin_url . "assets/bootstrap/css/bootstrap.min.css" );
+    wp_enqueue_style( 'rp-bootstrap-style', $plugin_url . "assets/bootstrap/css/bootstrap.min.css" );
+    wp_enqueue_style( 'rp-style', $plugin_url . "assets/css/style.css" );
 }
 
 //  Add Scripts
@@ -52,6 +53,7 @@ function rp_user_form_main( $atts = [], $content = null ) {
 add_action( 'wp_ajax_rp_form_response', 'rp_form_handler' );
 add_action( 'wp_ajax_nopriv_rp_form_response', 'rp_form_handler' );
 
+//  Function to save user and user review
 function rp_form_handler() {
     parse_str($_POST['data'], $formData);
     $err_messages = [];
@@ -62,7 +64,6 @@ function rp_form_handler() {
         $user_lname = sanitize_text_field( $formData['rp-lname'] );
         $user_email = sanitize_email( $formData['rp-email'] );
         $user_password = sanitize_text_field( $formData['rp-pass'] );
-        $user_review_title = sanitize_text_field( $formData['rp-review-title'] );
         $user_review_text = sanitize_textarea_field( $formData['rp-review-text'] );
         $user_rating = sanitize_text_field( $formData['rp-rating'] );
 
@@ -72,10 +73,12 @@ function rp_form_handler() {
             //  Create new user
             $uid = wp_create_user( $user_username, $user_password, $user_email );
 
-            add_user_meta( $uid, 'first_name', $user_fname);
-            add_user_meta( $uid, 'last_name', $user_lname);
-            add_user_meta( $uid, 'review_content', $user_review_text );
-            add_user_meta( $uid, 'review_rating', $user_rating);
+            error_log( "User registered with uid ".$uid );
+
+            update_user_meta( $uid, 'first_name', $user_fname);
+            update_user_meta( $uid, 'last_name', $user_lname);
+            update_user_meta( $uid, 'review_content', $user_review_text );
+            update_user_meta( $uid, 'review_rating', $user_rating);
 
             //  Leave an action hook for after registration actions
             do_action( 'rp_after_user_registration', $uid );
@@ -98,6 +101,7 @@ function rp_form_handler() {
     exit;
 
 }
+
 
 add_action( 'rp_after_user_registration', 'rp_send_registration_mail', 10, 1 );
 
@@ -136,3 +140,70 @@ add_shortcode( 'rp-testimonials', 'rp_testimonials_view' );
 function rp_testimonials_view() {
     include_once "includes/rp-testimonials-html.php";
 };
+
+add_action( 'wp_ajax_rp_stars_filter', 'rp_get_reviews' );
+add_action( 'wp_ajax_nopriv_rp_stars_filter', 'rp_get_reviews' );
+
+//  Function to fetch reviews according to ajax query
+function rp_get_reviews() {
+    if ( isset( $_POST['starsCount']) && $_POST['starsCount'] != 0 ) {
+        $starsFilter = sanitize_text_field( $_POST['starsCount'] );
+        $starsComp = "=";
+    } else {
+        $starsFilter = 5;
+        $starsComp = "<=";
+    }
+
+    // error_log( print_r( $_POST, true) );
+
+    $args = array(
+                    'meta_query' => array(
+                        array(
+                            'key' => 'review_rating',
+                            'value' => $starsFilter,
+                            'compare' => $starsComp
+                        )
+                    )
+                );
+
+    if ( isset( $_POST['order'] ) ) {
+        $args['order'] = $_POST['order'];
+        $args['orderby'] = 'user_registered';
+    }
+
+    if ( isset( $_POST['offset'] ) ) {
+        $args['offset'] = 6*$_POST['offset'];
+    }
+
+    $args['number'] = 6;
+    
+    error_log( print_r( $args, true) );
+
+    $user_query = new WP_User_Query( $args );
+
+    $users = $user_query->get_results();
+
+    $response = [];
+
+    foreach( $users as $user ) {
+        $userObj = [];
+
+        $userObj['fullName'] = get_user_meta( $user->ID, 'first_name', true ) . ' ' . get_user_meta( $user->ID, 'last_name', true );
+
+        $userObj['rating'] = get_user_meta( $user->ID, 'review_rating', true );
+        $userObj['reviewText'] = get_user_meta( $user->ID, 'review_content', true );
+        $response[] = $userObj;
+    }
+
+    $total_reviews_count = $user_query->get_total();  // Get Total Number of Reviews
+
+    $responseArray = array('reviews' => $response, 
+                            'totalReviews' => $total_reviews_count,
+                            'currentPage' => $_POST['offset']
+                        );
+
+    error_log( print_r( $responseArray, true));
+    wp_send_json( $responseArray );
+    
+    exit;
+}
