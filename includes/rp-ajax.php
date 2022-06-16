@@ -9,7 +9,9 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
 
         }
 
-        //  Function to save user and user review
+        /**
+         * Function to save user and user review
+         */
         public function save_user_review() {
             parse_str($_POST['data'], $formData);
             $err_messages = [];
@@ -58,7 +60,9 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
 
         }
 
-        //  Send an email to the registered user
+        /**
+         * Send an email to the registered user
+         */
         public function send_registration_mail( $uid ) {
             $user = get_userdata( $uid );
             $email = $user->user_email;
@@ -78,7 +82,9 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
                 wp_mail( [ $mail_recipient ], $mail_subject, $mail_body );
         }
 
-        //  Extract Username from Email
+        /**
+         * Extract Username from Email
+         */
         public function extract_username( $email ) {
             $email_parts = explode( '@', $email );
             $username = $email_parts[0];
@@ -86,6 +92,9 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
             return $username;
         }
 
+        /**
+         * Get Reviews according to Ajax Query
+         */
         public function get_reviews() {
             if ( isset( $_POST['starsCount']) && $_POST['starsCount'] != 0 ) {
                 $starsFilter = sanitize_text_field( $_POST['starsCount'] );
@@ -94,8 +103,6 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
                 $starsFilter = 5;
                 $starsComp = "<=";
             }
-        
-            // error_log( print_r( $_POST, true) );
         
             $args = array(
                             'meta_query' => array(
@@ -117,8 +124,6 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
             }
         
             $args['number'] = 6;
-            
-            error_log( print_r( $args, true) );
         
             $user_query = new WP_User_Query( $args );
         
@@ -142,8 +147,7 @@ if ( ! class_exists( 'RP_Ajax' ) ) :
                                     'totalReviews' => $total_reviews_count,
                                     'currentPage' => $_POST['offset']
                                 );
-        
-            error_log( print_r( $responseArray, true));
+                                
             wp_send_json( $responseArray );
             
             exit;

@@ -10,11 +10,17 @@ if ( ! defined( 'RP_Enqueue' ) ) :
             add_action( 'wp_enqueue_scripts', array( $this, 'add_scripts' ) );
         }
 
+        /**
+         * Enqueue Css Files
+         */
         public function add_stylesheets() {
             wp_enqueue_style( 'rp-bootstrap-style', RP_PLUGIN_URL . "assets/bootstrap/css/bootstrap.min.css" );
             wp_enqueue_style( 'rp-style', RP_PLUGIN_URL . "assets/css/style.css" );
         }
 
+        /**
+         * Enqueue JS Files
+         */
         public function add_scripts() {
             wp_enqueue_script( 'rp-main', RP_PLUGIN_URL . 'assets/js/main.js', array('jquery'), '1.0.0', true );
 
