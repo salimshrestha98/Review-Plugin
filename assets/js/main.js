@@ -28,6 +28,7 @@ jQuery(document). ready( function($) {
         });
     });
 
+    // Adding Stars to User Reviews
     $(".user-ratings").each(function( index ) {
         var ratings = $(this).attr('data-ratings');
         for(var i=0; i<ratings; i++) {
@@ -38,6 +39,7 @@ jQuery(document). ready( function($) {
         }
     });
 
+    //  Fill first N stars
     function fillStars( num = currentStars ) {
         clearStarFills();
 
@@ -46,6 +48,7 @@ jQuery(document). ready( function($) {
         }
     }
 
+    // Clear all Filled Stars 
     function clearStarFills() {
         $(".rp-filter-star").each( function() {
             $(this).removeClass("dashicons-star-filled");
@@ -54,6 +57,7 @@ jQuery(document). ready( function($) {
         });
     }
 
+    //  Fetch reviews data via ajax and set the reviews grid
     function setReviews() {
         $.post( ajaxVars.ajaxPostUrl, {'action': 'rp_stars_filter', 'starsCount': currentStars, 'order': currentOrder, 'offset': currentOffset}, function(response,status) {
             rp_setReviewCards( response.reviews );
@@ -63,6 +67,7 @@ jQuery(document). ready( function($) {
         });
     }
 
+    //  Build Pagination Buttons
     function rp_setPagination( totalReviews ) {
         var btnsContainer = $("#rp-page-btn-container").html("");
         while( totalReviews > 0) {
@@ -89,35 +94,7 @@ jQuery(document). ready( function($) {
         console.log( currentOffset );
     }
 
-    // function rp_setPagination( totalReviews, currentPage ) {
-    //     var basePageEl = $("#rp-page-btn-base");
-    //     var pageBtnHtml = $("#rp-page-btn-html").html();
-    //     console.log( pageBtnHtml );
-
-    //     var pageBtns = $(".rp-pagination-btn");
-
-    //     $('#rp-pagination-ul').html("kkk");
-    //     $('#rp-pagination-ul').html($("#rp-pagination-html").html());
-
-
-    //     while(totalReviews > 0) {
-    //         basePageEl.after( pageBtnHtml );
-    //         totalReviews -= 6;
-    //         console.log( "Page Btn Created.");
-    //     }
-
-    //     var pageIndex = 1;
-
-    //     $(".rp-pagination-link").each( function() {
-    //         $(this).text(pageIndex);
-    //         pageIndex++;
-
-    //         if (currentPage === pageIndex) {
-    //             $(this).addClass('active');
-    //         }
-    //     });
-    // }
-
+    //  Animate fill stars on hover
     $(".rp-filter-star").mouseenter( function() {
         var starIndex = $(this).attr('data-index');
         fillStars( starIndex );
@@ -127,6 +104,7 @@ jQuery(document). ready( function($) {
         fillStars();
     });
 
+    //  Change reviews when clicked on a star filter
     $(".rp-filter-star").click( function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -137,6 +115,7 @@ jQuery(document). ready( function($) {
         setReviews();
     });
 
+    //  Change reviews when user selects different view order
     $("#rp-sort-select").change( function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -147,6 +126,7 @@ jQuery(document). ready( function($) {
         setReviews();
     });
 
+    //  Add Card Grid to the DOM
     function rp_setReviewCards( response ) {
         var reviewCount = response.length;
         var baseEl = $('#rp-card-template');
@@ -185,10 +165,12 @@ jQuery(document). ready( function($) {
         }
     }
 
+    // Initial States
     var currentStars = 0;
     var currentOrder = null;
     var currentOffset = 0;
     currentPage = 0;
 
+    // Set Reviews Grid once when page loads
     setReviews();
 });
